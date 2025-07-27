@@ -19,7 +19,6 @@ window.addEventListener('load', function(){
                 const isClickOnPlayer = 
                     x >= player.x && x <= player.x + player.width &&
                     y >= player.y && y <= player.y + player.height;
-                console.log(x,y)
                 if (isClickOnPlayer && this.useSlingshot) {
                     this.clickX = x;
                     this.clickY = y;
@@ -28,8 +27,6 @@ window.addEventListener('load', function(){
                     player.speedY = 0;
                     player.speedX = 0;
                     player.gravity = 0;
-                    
-                    console.log('попал', x, y);
                 }
             });
             window.addEventListener('mousemove', (e) => {
@@ -58,7 +55,6 @@ window.addEventListener('load', function(){
 
                     const speedX = (dx / distance) * maxSpeed * strength;
                     const speedY = (dy / distance) * maxSpeed * strength;
-                    console.log('дистанция:', distance.toFixed(1), 'сила рогатки:', strength.toFixed(2), 'х скорость:', speedX.toFixed(2), 'у скорость:', speedY.toFixed(2));
 
                     player.speedX = speedX;
                     player.speedY = speedY;
@@ -225,7 +221,7 @@ window.addEventListener('load', function(){
         canBreakBlock(blockType) {
             switch(this.pickaxeType) {
                 case 'wooden':
-                    return blockType === 'earth' || blockType === 'dirt';
+                    return blockType === 'earth' || blockType === 'dirt' || blockType === 'stone';
                 case 'stone':
                     return blockType === 'earth' || blockType === 'dirt' || blockType === 'stone' || blockType === 'iron';
                 case 'iron':
@@ -395,24 +391,6 @@ window.addEventListener('load', function(){
             const resources = this.game.state === 'playing' 
             ? this.game.destroyedBlock 
             : this.game.totalResources;
-            // const stats = this.game.destroyedBlock;
-            // let y = 20;
-            // context.font = `${this.fontSize}px ${this.fontFamily}`;
-            // context.fillStyle = this.color;
-            // context.textAlign = 'left';
-
-            // context.fillText('Resources:', 10, y);
-            // y += 25;
-            // for (const [type, count] of Object.entries(stats)) {
-            //     if (type === 'earth' || type === 'dirt') continue;
-            //     const icon = textures[type];
-            //     const iconSize = 20;
-            //     if (icon && icon.complete) {
-            //         context.drawImage(icon, 10, y - iconSize + 5, iconSize, iconSize);
-            //     }
-            //     context.fillText(`${type}: ${count}`, 35, y + 5);
-            //     y += 25;
-            // }
         }
     }
     class Game {
@@ -494,7 +472,6 @@ window.addEventListener('load', function(){
                     this.blocks.push(block);
                 }
             }
-            //console.log(this.blocks);
         }
     
         
@@ -513,7 +490,6 @@ window.addEventListener('load', function(){
             } else {
                 this.usedTimer += deltaTime;
             }
-            //console.log(this.input.useSlingshot);
             const playerCenterY = this.player.y + this.player.height / 2;
             const screenCenterY = this.height / 2;
             this.cameraY = playerCenterY - screenCenterY;
@@ -529,7 +505,6 @@ window.addEventListener('load', function(){
                 this.player.gravity = 0;
         }
         victory() {
-            console.log("ПОБЕДА! Текущие ресурсы:", this.destroyedBlock);
             this.state = 'victory';
             this.addToTotalResources();
         }
@@ -543,14 +518,12 @@ window.addEventListener('load', function(){
                 this.totalResources[type] += count;
             }
             
-            console.log("Ресурсы добавлены:", this.totalResources);
             localStorage.setItem('totalResources', JSON.stringify(this.totalResources));
             
             this.destroyedBlock = {};
         }
         updateDestroyedBlock(type) {
             this.destroyedBlock[type] = (this.destroyedBlock[type] || 0) + 1;
-            console.log("Ресурс добавлен:", type, "Текущие:", this.destroyedBlock);
         }
         draw(context){
             context.clearRect(0, 0, this.width, this.height);
@@ -759,7 +732,6 @@ window.addEventListener('load', function(){
             if (x >= game.gameOverButtons.menu.x && x <= game.gameOverButtons.menu.x + game.gameOverButtons.menu.width &&
                 y >= game.gameOverButtons.menu.y && y <= game.gameOverButtons.menu.y + game.gameOverButtons.menu.height) {
                 game.state = 'menu';
-                //game.inShop = false;
             }
         }
         else if (game.state === 'victory') {
@@ -803,11 +775,8 @@ window.addEventListener('load', function(){
                         const newPickaxe = item.type.replace('_pickaxe', '');
                         game.player.pickaxeType = newPickaxe;
                         localStorage.setItem('pickaxeType', newPickaxe);
-                        console.log(`Куплена кирка: ${item.type}`);
-                        
                         game.draw(ctx);
                     } else {
-                        console.log(`Недостаточно ресурсов для ${item.type}`);
                         alert("Недостаточно ресурсов!");
                     }
                 }
